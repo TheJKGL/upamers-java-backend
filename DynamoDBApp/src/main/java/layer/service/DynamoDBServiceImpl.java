@@ -94,8 +94,12 @@ public class DynamoDBServiceImpl implements DynamoDBService {
 
         if (existingUser != null) {
             updateUsersNotNullAttributes(existingUser, inputUser);
-            dynamoDBMapper.save(existingUser);
-            return getJsonResponse("User updated: " + existingUser.getEmail());
+            if (isValidSocialMedia(existingUser.getSocialMedia())) {
+                dynamoDBMapper.save(existingUser);
+                return getJsonResponse("User successfully updated: " + existingUser.getEmail());
+            } else {
+                return getJsonResponse("User with such social media links cannot be created");
+            }
         } else {
             return getJsonResponse("User with this email not found");
         }
